@@ -1,7 +1,7 @@
 pyrogram==2.0.106
 pyrofork==2.2.11
 tgcrypto<=1.2.3
-aiohttp<=3.8.1
+aiohttp==3.8.6
 python-dotenv<=0.20.0
 motor
 aiofiles
@@ -12,5 +12,5 @@ psutil
 pyromod
 colorama
 jinja2
-Flask<= 3.0.0
-gunicorn<= 21.2.0
+Flask<=3.0.0
+gunicorn<=21.2.0
