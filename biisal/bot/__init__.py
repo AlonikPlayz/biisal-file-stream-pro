@@ -1,5 +1,5 @@
 # (c) biisal (c) adarsh-goel
-from pyrogram import Client
+from pyromod import Client
 import pyromod.listen
 from ..vars import Var
 from os import getcwd
