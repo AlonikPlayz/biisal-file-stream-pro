@@ -34,6 +34,13 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 ppath = "biisal/bot/plugins/*.py"
 files = glob.glob(ppath)
 StreamBot.start()
+from pyromod.listen.listener_types import ListenerTypes
+
+if not hasattr(StreamBot, "listeners"):
+    StreamBot.listeners = {}
+
+if ListenerTypes.MESSAGE not in StreamBot.listeners:
+    StreamBot.listeners[ListenerTypes.MESSAGE] = []
 loop = asyncio.get_event_loop()
 
 
