@@ -34,7 +34,7 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 ppath = "biisal/bot/plugins/*.py"
 files = glob.glob(ppath)
 StreamBot.start()
-from pyromod.listen.listener_types import ListenerTypes
+from pyromod.types import ListenerTypes
 
 if not hasattr(StreamBot, "listeners"):
     StreamBot.listeners = {}
