@@ -12,3 +12,4 @@ colorama
 jinja2
 Flask
 gunicorn
+uvloop
