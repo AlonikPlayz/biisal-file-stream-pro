@@ -21,7 +21,6 @@ from biisal.server import web_server
 from biisal.utils.handler import handle_flood_wait
 from biisal.utils.keepalive import ping_server
 from biisal.utils.logger import logger
-from biisal.utils.tokens import cleanup_expired_tokens
 from biisal.vars import Var
 
 PLUGIN_PATH = "biisal/bot/plugins/*.py"
