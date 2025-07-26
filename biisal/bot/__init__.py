@@ -1,11 +1,11 @@
-# (c) biisal (c) adarsh-goel
+# Thunder/bot/__init__.py
+
 from pyrogram import Client
-import pyromod.listen
-from ..vars import Var
-from os import getcwd
+from biisal.vars import Var
+from biisal.utils.logger import logger
 
 StreamBot = Client(
-    name='Web Streamer',
+    name="Web Streamer",
     api_id=Var.API_ID,
     api_hash=Var.API_HASH,
     bot_token=Var.BOT_TOKEN,
