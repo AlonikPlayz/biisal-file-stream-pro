@@ -115,7 +115,6 @@ async def start_services():
 
         keepalive_task = asyncio.create_task(ping_server())
         print("   ✓ Keep-alive service started")
-        token_cleanup_task = asyncio.create_task(schedule_token_cleanup())
 
     except Exception as e:
         logger.error(f"   ✖ Failed to start Web Server: {e}", exc_info=True)
