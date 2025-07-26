@@ -3,7 +3,7 @@ from typing import Any, Optional
 from pyrogram.types import Message
 from pyrogram.file_id import FileId
 from pyrogram.raw.types.messages import Messages
-from biisal.server.exceptions import FIleNotFound
+from biisal.server.exceptions import FileNotFound
 
 
 async def parse_file_id(message: "Message") -> Optional[FileId]:
@@ -19,7 +19,7 @@ async def parse_file_unique_id(message: "Messages") -> Optional[str]:
 async def get_file_ids(client: Client, chat_id: int, id: int) -> Optional[FileId]:
     message = await client.get_messages(chat_id, id)
     if message.empty:
-        raise FIleNotFound
+        raise FileNotFound
     media = get_media_from_message(message)
     file_unique_id = await parse_file_unique_id(message)
     file_id = await parse_file_id(message)
