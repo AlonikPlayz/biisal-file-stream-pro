@@ -55,13 +55,13 @@ async def start(b, m):
                 
             )
              return
-        except Exception:
+        except Exception as e:
+            print(f"Error occurred: {e}")  # Log the exception
             await b.send_message(
                 chat_id=m.chat.id,
                 text="<b>sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ.ᴘʟᴇᴀsᴇ <a href='https://t.me/biisal_bot'>ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ sᴜᴘᴘᴏʀᴛ</a></b>",
-                
-                disable_web_page_preview=True)
-            return
+                disable_web_page_preview=True
+            )
     await StreamBot.send_photo(
     chat_id=m.chat.id,
     photo="https://telegra.ph/file/d813fe75a3ac675ef34b7.jpg",
