@@ -5,7 +5,7 @@ from typing import Callable
 
 from pyrogram.errors import FloodWait
 
-from Thunder.utils.logger import logger
+from biisal.utils.logger import logger
 
 
 async def handle_flood_wait(func: Callable, *args, **kwargs):
