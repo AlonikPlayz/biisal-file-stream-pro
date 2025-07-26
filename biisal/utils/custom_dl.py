@@ -8,7 +8,7 @@ from pyrogram import Client, utils, raw
 from .file_properties import get_file_ids
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
-from biisal.server.exceptions import FIleNotFound
+from biisal.server.exceptions import FileNotFound
 from pyrogram.file_id import FileId, FileType, ThumbnailSource
 
 
@@ -53,7 +53,7 @@ class ByteStreamer:
         logging.debug(f"Generated file ID and Unique ID for message with ID {id}")
         if not file_id:
             logging.debug(f"Message with ID {id} not found")
-            raise FIleNotFound
+            raise FileNotFound
         self.cached_file_ids[id] = file_id
         logging.debug(f"Cached media message with ID {id}")
         return self.cached_file_ids[id]
