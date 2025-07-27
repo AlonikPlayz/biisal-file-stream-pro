@@ -1,45 +1,54 @@
-from biisal.vars import Var
-from biisal.bot import StreamBot
-from biisal.utils.human_readable import humanbytes
-from biisal.utils.file_properties import get_file_ids
-from biisal.server.exceptions import InvalidHash
+# Thunder/utils/render_template.py
+
+import html as html_module
 import urllib.parse
-import aiofiles
-import logging
-import aiohttp
-import jinja2
 
-async def render_page(id, secure_hash, src=None):
-    file = await StreamBot.get_messages(int(Var.BIN_CHANNEL), int(id))
-    file_data = await get_file_ids(StreamBot, int(Var.BIN_CHANNEL), int(id))
-    if file_data.unique_id[:6] != secure_hash:
-        logging.debug(f"link hash: {secure_hash} - {file_data.unique_id[:6]}")
-        logging.debug(f"Invalid hash for message with - ID {id}")
-        raise InvalidHash
+from jinja2 import Environment, FileSystemLoader
 
-    src = urllib.parse.urljoin(
-        Var.URL,
-        f"{id}/{urllib.parse.quote_plus(file_data.file_name)}?hash={secure_hash}",
-    )
+from biisal.bot import StreamBot
+from biisal.server.exceptions import InvalidHash
+from biisal.utils.file_properties import get_fname, get_uniqid
+from biisal.utils.handler import handle_flood_wait
+from biisal.utils.logger import logger
+from biisal.vars import Var
 
-    tag = file_data.mime_type.split("/")[0].strip()
-    file_size = humanbytes(file_data.file_size)
-    if tag in ["video", "audio"]:
-        template_file = "biisal/template/req.html"
-    else:
-        template_file = "biisal/template/dl.html"
-        async with aiohttp.ClientSession() as s:
-            async with s.get(src) as u:
-                file_size = humanbytes(int(u.headers.get("Content-Length")))
+template_env = Environment(
+    loader=FileSystemLoader('biisal/template'),
+    enable_async=True,
+    cache_size=200,
+    auto_reload=False,
+    optimized=True
+)
 
-    with open(template_file) as f:
-        template = jinja2.Template(f.read())
-
-    file_name = file_data.file_name.replace("_", " ")
-
-    return template.render(
-        file_name=file_name,
-        file_url=src,
-        file_size=file_size,
-        file_unique_id=file_data.unique_id,
-    )
+async def render_page(id: int, secure_hash: str, requested_action: str | None = None) -> str:
+    try:
+        message = await handle_flood_wait(StreamBot.get_messages, chat_id=int(Var.BIN_CHANNEL), message_ids=id)
+        if not message:
+            raise InvalidHash("Message not found")
+        
+        file_unique_id = get_uniqid(message)
+        file_name = get_fname(message)
+        
+        if not file_unique_id or file_unique_id[:6] != secure_hash:
+            raise InvalidHash("File unique ID or secure hash mismatch during rendering.")
+        
+        quoted_filename = urllib.parse.quote(file_name.replace('/', '_'))
+        src = urllib.parse.urljoin(Var.URL, f'{secure_hash}{id}/{quoted_filename}')
+        safe_filename = html_module.escape(file_name)
+        if requested_action == 'stream':
+            template = template_env.get_template('req.html')
+            context = {
+                'heading': f"View {safe_filename}",
+                'file_name': safe_filename,
+                'src': src
+            }
+        else:
+            template = template_env.get_template('dl.html')
+            context = {
+                'file_name': safe_filename,
+                'src': src
+            }
+        return await template.render_async(**context)
+    except Exception as e:
+        logger.error(f"Error in render_page for ID {id} and hash {secure_hash}: {e}", exc_info=True)
+        raise
