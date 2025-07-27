@@ -87,4 +87,11 @@ def get_fname(msg: Message) -> str:
                 ext = "ogg"
             elif file_type in ["video", "animation", "video_note"]:
                 ext = "mp4"
-            elif fil
+            elif file_type == "sticker":
+                ext = "webp"
+            else:
+                ext = "bin"
+        timestamp = dt.now().strftime("%Y%m%d%H%M%S")
+        fname = f"Thunder File To Link_{timestamp}.{ext}"
+    
+    return fname
