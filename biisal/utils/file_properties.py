@@ -57,3 +57,34 @@ def get_name(media_msg: Message) -> str:
 def get_media_file_size(m):
     media = get_media_from_message(m)
     return getattr(media, "file_size", 0)
+
+def get_uniqid(message: Message) -> Optional[str]:
+    media = get_media(message)
+    return getattr(media, 'file_unique_id', None)
+
+def get_fname(msg: Message) -> str:
+    media = get_media(msg)
+    fname = None
+    
+    if media:
+        fname = getattr(media, 'file_name', None)
+    
+    if not fname:
+        media_type_str = "unknown_media"
+        if msg.media:
+            media_type_value = msg.media.value
+            if media_type_value:
+                media_type_str = str(media_type_value)
+        
+        ext = "bin"
+        if media and hasattr(media, '_file_type'):
+            file_type = media._file_type
+            if file_type == "photo":
+                ext = "jpg"
+            elif file_type == "audio":
+                ext = "mp3"
+            elif file_type == "voice":
+                ext = "ogg"
+            elif file_type in ["video", "animation", "video_note"]:
+                ext = "mp4"
+            elif fil
