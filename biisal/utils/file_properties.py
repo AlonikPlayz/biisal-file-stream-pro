@@ -5,6 +5,18 @@ from pyrogram.file_id import FileId
 from pyrogram.raw.types.messages import Messages
 from biisal.server.exceptions import FileNotFound
 
+def get_media(message: Message) -> Optional[Any]:
+    for attr in ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note"):
+        media = getattr(message, attr, None)
+        if media:
+            if hasattr(media, 'thumbs') and media.thumbs:
+                pass
+            return media
+    return None
+
+def get_uniqid(message: Message) -> Optional[str]:
+    media = get_media(message)
+    return getattr(media, 'file_unique_id', None)
 
 async def parse_file_id(message: "Message") -> Optional[FileId]:
     media = get_media_from_message(message)
@@ -45,11 +57,6 @@ def get_media_from_message(message: "Message") -> Any:
         if media:
             return media
 
-
-def get_hash(media_msg: Message) -> str:
-    media = get_media_from_message(media_msg)
-    return getattr(media, "file_unique_id", "")[:6]
-
 def get_name(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
     return getattr(media, 'file_name', "")
@@ -58,9 +65,13 @@ def get_media_file_size(m):
     media = get_media_from_message(m)
     return getattr(media, "file_size", 0)
 
-def get_uniqid(message: Message) -> Optional[str]:
+def get_hash(media_msg: Message) -> str:
+    uniq_id = get_uniqid(media_msg)
+    return uniq_id[:6] if uniq_id else ''
+
+def get_fsize(message: Message) -> int:
     media = get_media(message)
-    return getattr(media, 'file_unique_id', None)
+    return getattr(media, 'file_size', 0) if media else 0
 
 def get_fname(msg: Message) -> str:
     media = get_media(msg)
