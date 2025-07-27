@@ -13,7 +13,7 @@ from pyrogram.errors import FloodWait, UserNotParticipant
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 #from utils_bot import get_shortlink
 
-from biisal.utils.file_properties import get_name, get_hash, get_media_file_size
+from biisal.utils.file_properties import get_name, get_hash, get_media_file_size, get_fname, get_fsize
 db = Database(Var.DATABASE_URL, Var.name)
 
 
@@ -80,8 +80,15 @@ async def private_receive_handler(c: Client, m: Message):
         return await m.reply(Var.BAN_ALERT)
     try:
         log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
-        stream_link = f"{Var.URL}watch/{get_hash(log_msg)}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}"
-        online_link = f"{Var.URL}/{get_hash(log_msg)}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}"
+        base_url = Var.URL.rstrip("/")
+        fid = log_msg.id
+        m_name_raw = get_fname(log_msg)
+        m_name = m_name_raw.decode('utf-8', errors='replace') if isinstance(m_name_raw, bytes) else str(m_name_raw)
+        m_size_hr = humanbytes(get_fsize(log_msg))
+        enc_fname = quote(m_name)
+        f_hash = get_hash(log_msg)
+        stream_link = f"{base_url}/watch/{f_hash}{fid}/{enc_fname}"
+        online_link = f"{base_url}/{f_hash}{fid}/{enc_fname}"
 
         await log_msg.reply_text(text=f"**RᴇQᴜᴇꜱᴛᴇᴅ ʙʏ :** [{m.from_user.first_name}](tg://user?id={m.from_user.id})\n**Uꜱᴇʀ ɪᴅ :** `{m.from_user.id}`\n**Stream ʟɪɴᴋ :** {stream_link}", disable_web_page_preview=True,  quote=True)
         await m.reply_text(
